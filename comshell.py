@@ -84,7 +84,7 @@ if from_the_scratch:
 
     # Создать два объекта модели Author, связанные с пользователями.
     for n in range(1, authQTY):
-        globals()[f'author{n}'] = Author.objects.create(user = globals()[f'user{random.choice(range(0, usersQTY))}'])
+        globals()[f'author{n}'] = Author.objects.create(user = globals()[f'user{random.choice(range(1, usersQTY))}'])
 
     # Добавить 4 категории в модель Category
     for n in range(1, catQTY):
