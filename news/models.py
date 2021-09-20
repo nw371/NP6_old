@@ -3,6 +3,14 @@ from django.db import models
 from django.db.models import Sum
 
 
+class Subscriber(models.Model):
+    # связь «один ко многим» с моделью Post
+    subscriber = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Подписчик')
+
+    class Meta:
+        verbose_name = 'Подписчик'
+        verbose_name_plural = 'Подписчики'
+
 class Author(models.Model):
     # cвязь «один к одному» с встроенной моделью пользователей User;
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь')
