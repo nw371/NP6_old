@@ -35,19 +35,23 @@
                     <div class="container-fluid">
                         <button class="btn btn-primary" id="sidebarToggle">Переключить меню</button>
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        {% if is_not_author %}
+                                <button> <a class="btn btn-primary" href="/sign/upgrade/"> Записаться в словоблуды!</a> </button>
+                        {% endif %}
                             <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                            {% if is_not_author %}
-                                <button> <a href="/sign/upgrade/"> Записаться в словоблуды!</a> </button>
-                            {% endif %}
+
                                 {% if request.user.username %}
-                                <h5>Вы зашли, как: {{request.user.username}}</h5>
+                                <pre>
+                                <h5>Вы зашли, как:{{request.user.username}} <a class="nav-link" href="/sign/logout/">Выйти</a></h5>
+                                    </pre>
                                 {% else %}
-                                <h5>Вы зашли, как: гость</h5>
+
+                                <h5>Вы зашли, как: Гость <br><a class="nav-link" href="/sign/login/">Войти</a></h5>
+
                                 {% endif %}
 
-                                <li class="nav-item active"><a class="nav-link" href="/sign/logout/">Выйти</a></li>
                                 <li class="nav-item dropdown">
 <!--                                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>-->
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
