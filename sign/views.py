@@ -20,3 +20,14 @@ class BaseRegisterView(CreateView):
     form_class = BaseRegisterForm
     success_url = '/news/'
 
+    # def post(self, request, *args, **kwargs):
+    #     appointment = Appointment(
+    #         date = datetime.strptime(request.POST['date'], '%Y-%m-%d'),
+    #         client_name = request.POST['client_name'],
+    #         message = request.POST['message'],
+    #     )
+    #     appointment.save()
+    #
+    #     return redirect('appointments:make_appointment')
+
+

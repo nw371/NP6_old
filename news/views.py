@@ -2,7 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.views.generic import ListView, DetailView, TemplateView, FormView, UpdateView, DeleteView
 from .forms import PostForm
 from .filters import PostFilter
-from .models import Post
+from .models import Post, Category
+
 
 class News(ListView):
     model = Post  # указываем модель, объекты которой мы будем выводить
@@ -23,10 +24,10 @@ class SearchNews(ListView):
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())  # вписываем наш фильтр в контекст
         return context
 
-# создаём представление, в котором будут детали конкретного отдельного товара
+# создаём представление, в котором будут детали конкретного отдельного поста
 class PostDetail(DetailView):
-    model = Post  # модель всё та же, но мы хотим получать детали конкретно отдельного товара
-    template_name = 'news/post.html'  # название шаблона будет product.html
+    model = Post  # модель всё та же, но мы хотим получать детали конкретно отдельного поста
+    template_name = 'news/post.html'  # название шаблона будет post.html
     context_object_name = 'post'  # название объекта. в нём будет
 
 class AddPub(PermissionRequiredMixin,FormView):
@@ -39,7 +40,7 @@ class AddPub(PermissionRequiredMixin,FormView):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)  # создаём новую форму, забиваем в неё данные из POST-запроса
 
-        if form.is_valid():  # если пользователь ввёл всё правильно и нигде не ошибся, то сохраняем новый товар
+        if form.is_valid():  # если пользователь ввёл всё правильно и нигде не ошибся, то сохраняем новый пост
             form.save()
 
         return super().get(request, *args, **kwargs)
@@ -50,8 +51,8 @@ class AddPub(PermissionRequiredMixin,FormView):
     #     return context
 
 class PostEdit(PermissionRequiredMixin, UpdateView):
-    model = Post  # модель всё та же, но мы хотим получать детали конкретно отдельного товара
-    template_name = 'news/edit.html'  # название шаблона будет product.html
+    model = Post  # модель всё та же, но мы хотим получать детали конкретно отдельного поста
+    template_name = 'news/edit.html'  # название шаблона будет edit.html
     #context_object_name = 'post'  # название объекта. в нём будет
     form_class = PostForm
     permission_required = ('news.edit_post',)
@@ -77,4 +78,15 @@ class PostDelete(LoginRequiredMixin, DeleteView):
         context['is_not_author'] = not self.request.user.groups.filter(name = 'author').exists()
         return context
 
+class CategoryList(ListView):
+    model = Category
+    context_object_name = 'categories'
+    template_name = 'news/categories.html'
+    queryset=Category.objects.all()
 
+class CategoryView(ListView):
+    model = Post  # указываем модель, объекты которой мы будем выводить
+    template_name = 'news/category.html'  # указываем имя шаблона, в котором будет лежать HTML, в котором будут все инструкции о том, как именно пользователю должны вывестись наши объекты
+    context_object_name = 'category'  # это имя списка, в котором будут лежать все объекты, его надо указать, чтобы обратиться к самому списку объектов через HTML-шаблон
+    queryset = Post.objects.order_by('-date')
+    paginate_by = 10
