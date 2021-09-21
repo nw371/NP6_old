@@ -87,6 +87,16 @@ class CategoryList(ListView):
 class CategoryView(ListView):
     model = Post  # указываем модель, объекты которой мы будем выводить
     template_name = 'news/category.html'  # указываем имя шаблона, в котором будет лежать HTML, в котором будут все инструкции о том, как именно пользователю должны вывестись наши объекты
-    context_object_name = 'category'  # это имя списка, в котором будут лежать все объекты, его надо указать, чтобы обратиться к самому списку объектов через HTML-шаблон
-    queryset = Post.objects.order_by('-date')
-    paginate_by = 10
+    #context_object_name = 'category'# это имя списка, в котором будут лежать все объекты, его надо указать, чтобы обратиться к самому списку объектов через HTML-шаблон
+    #queryset = Post.objects.all()
+    #print(queryset)
+    #paginate_by = 10
+
+
+    def get_context_data(self, **kwargs):  # забираем отфильтрованные объекты переопределяя метод get_context_data у наследуемого класса (привет, полиморфизм, мы скучали!!!)
+        context = super().get_context_data(**kwargs)
+        print(context)
+        id = self.kwargs.get('category')
+        print("THIS IS ID: ",id)
+        context['category'] = Post.objects.filter(category=id).order_by('-date')  # вписываем наш фильтр в контекст
+        return context
