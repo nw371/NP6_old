@@ -11,7 +11,9 @@
 
 
 {% for category in categories %}
-{{ category.name }}
+
+<a href="/news/categories/{{category.id}}">{{ category.name }} </a>
+<br>
 {% endfor %}
 
 
