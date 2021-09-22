@@ -3,14 +3,14 @@
 {% load my_filters %}
 <!-- Название у нас будет Новости -->
 {% block title %}
-{{ category }}
+{{ category.name }}
 {% endblock title %}
 
 <!-- В контенте на странице мы выводим все публикации -->
 {% block content %}
 
 <h1>Список публикаций</h1>
-<h1>Показано {{ category|length }} публикаций.</h1>
+<h1>Показано {{ category.id|length }} публикаций.</h1>
     <table>
             <tr>
                 <td>
@@ -29,7 +29,7 @@
                     <b>Предпросмотр</b>
                 </td>
             </tr>
-        {% for post in category %}
+        {% for post in categoryview %}
             <tr>
                 <td>
                    <a href="/news/{{post.id}}">{{ post.name|censor }} </a>
