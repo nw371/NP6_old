@@ -1,4 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.mail import send_mail
+from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, TemplateView, FormView, UpdateView, DeleteView
 from .forms import PostForm
 from .filters import PostFilter
@@ -87,12 +89,23 @@ class CategoryList(ListView):
 class CategoryView(ListView):
     model = Post  # указываем модель, объекты которой мы будем выводить
     template_name = 'news/category.html'  # указываем имя шаблона, в котором будет лежать HTML, в котором будут все инструкции о том, как именно пользователю должны вывестись наши объекты
-
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):  # забираем отфильтрованные объекты переопределяя метод get_context_data у наследуемого класса (привет, полиморфизм, мы скучали!!!)
         context = super().get_context_data(**kwargs)
-        print(context)
         id = self.kwargs.get('pk')
-        print("THIS IS ID: ",id)
         context['categoryview'] = Post.objects.filter(category=id).order_by('-date')  # вписываем наш фильтр в контекст
         return context
+
+    def post(self, request, *args, **kwargs):
+        # отправляем письмо
+        send_mail(
+            subject=f'Вы подписались на категроию',
+            # имя клиента и дата записи будут в теме для удобства
+            message='Спасибо за подписку на нашем сайте',  # сообщение с кратким описанием проблемы
+            from_email='sergey@batalov.email',  # здесь указываете почту, с которой будете отправлять (об этом попозже)
+            recipient_list=['sergey@batalov.email'], # здесь список получателей. Например, секретарь, сам врач и т. д.
+            fail_silently = False,
+        )
+
+        return redirect('/')
