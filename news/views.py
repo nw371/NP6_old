@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, TemplateView, FormView, UpdateView, DeleteView
 from .forms import PostForm
@@ -97,15 +97,14 @@ class CategoryView(ListView):
         context['categoryview'] = Post.objects.filter(category=id).order_by('-date')  # вписываем наш фильтр в контекст
         return context
 
-    def post(self, request, *args, **kwargs):
-        # отправляем письмо
-        send_mail(
-            subject=f'Вы подписались на категроию',
-            # имя клиента и дата записи будут в теме для удобства
-            message='Спасибо за подписку на нашем сайте',  # сообщение с кратким описанием проблемы
-            from_email='sergey@batalov.email',  # здесь указываете почту, с которой будете отправлять (об этом попозже)
-            recipient_list=['sergey@batalov.email'], # здесь список получателей. Например, секретарь, сам врач и т. д.
-            fail_silently = False,
-        )
-
-        return redirect('/')
+def send_email(*args, **kwargs):
+    # отправляем письмо
+    msg = EmailMultiAlternatives(
+        subject=f'Вы подписались на категроию',
+        # имя клиента и дата записи будут в теме для удобства
+        body='Спасибо за подписку на нашем сайте',  # сообщение с кратким описанием проблемы
+        from_email='sergey@batalov.email',  # здесь указываете почту, с которой будете отправлять (об этом попозже)
+        to=['sergey@batalov.email'], # здесь список получателей. Например, секретарь, сам врач и т. д.
+    )
+    msg.send()
+    return redirect('/')
