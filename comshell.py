@@ -158,3 +158,5 @@ for i in c.values():
 #Post.objects.create(type = 'AR', name = 'Пост для проверки типа', body = f'Проверяем, как работает тип поста по умолчанию.', author = Author.objects.get(id = 1))
 
 
+# Subscriber.objects.get(id = 1).category.add(Category.objects.get(id=1))
+# Subscriber.objects.get(id=1).user.username

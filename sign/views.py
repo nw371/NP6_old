@@ -9,8 +9,10 @@ from .forms import BaseRegisterForm
 def add_to_authors(request):
     print('1')
     user = request.user
-    author_group = Group.objects.get(name='author')
-    if not request.user.groups.filter(name='author').exists():
+    print(user)
+    author_group = Group.objects.get(name='authors')
+    print(author_group)
+    if not request.user.groups.filter(name='authors').exists():
         print('2')
         author_group.user_set.add(user)
     return redirect('/')
