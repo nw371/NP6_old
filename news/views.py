@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, TemplateView, FormView, UpdateView, DeleteView
 from .forms import PostForm
 from .filters import PostFilter
-from .models import Post, Category
+from .models import Post, Category, Subscriber
 
 
 class News(ListView):
@@ -95,15 +95,25 @@ class CategoryView(ListView):
     def get_context_data(self, **kwargs):  # забираем отфильтрованные объекты переопределяя метод get_context_data у наследуемого класса (привет, полиморфизм, мы скучали!!!)
         context = super().get_context_data(**kwargs)
         id = self.kwargs.get('pk')
+        print(f"This is cat id: {id}")
         context['categoryview'] = Post.objects.filter(category=id).order_by('-date')  # вписываем наш фильтр в контекст
         return context
 
+
+
 def send_email(request):
-    user = request.user.username
+    print(f"Это контекст: {request}")
+    cat = request.META.get('HTTP_REFERER')[-1]
+    print("Cat: ", cat)
+    user = request.user.id
+
+    if not Subscriber.objects.get(user_id = user):
+        Subscriber.objects.create(user_id = user)
+    Subscriber.objects.get(user_id = user).category.add(Category.objects.get(id=cat))
     print(user)
     # отправляем письмо
     msg = EmailMultiAlternatives(
-        subject=f'Вы подписались на категроию',
+        subject=f'Вы подписались на категроию {Category.objects.get(id=cat)}',
         # имя клиента и дата записи будут в теме для удобства
         body='Спасибо за подписку на нашем сайте',  # сообщение с кратким описанием проблемы
         from_email='sergey@batalov.email',  # здесь указываете почту, с которой будете отправлять (об этом попозже)
