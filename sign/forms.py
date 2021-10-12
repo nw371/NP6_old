@@ -19,7 +19,6 @@ class BaseRegisterForm(UserCreationForm):
                   "password1",
                   "password2", )
 
-
 class BasicSignupForm(SignupForm):
 
     def save(self, request):

@@ -90,7 +90,7 @@ TEMPLATES = [
     },
 ]
 
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = '/sign/login/'
 LOGIN_REDIRECT_URL = '/news/'
 
 WSGI_APPLICATION = 'NewsPortal.wsgi.application'
