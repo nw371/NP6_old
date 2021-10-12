@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.http import request
@@ -100,13 +101,12 @@ class CategoryView(ListView):
         return context
 
 
-
+@login_required
 def send_email(request):
-    print(f"Это контекст: {request}")
     cat = request.META.get('HTTP_REFERER')[-1]
     print("Cat: ", cat)
     user = request.user.id
-
+    print(user)
     if not Subscriber.objects.get(user_id = user):
         Subscriber.objects.create(user_id = user)
     Subscriber.objects.get(user_id = user).category.add(Category.objects.get(id=cat))
