@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, Group
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView
 from .forms import BaseRegisterForm
-from ..news.models import Author
+from news.models import Author
 
 
 @login_required

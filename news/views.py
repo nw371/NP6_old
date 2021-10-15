@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.http import request
 from django.shortcuts import redirect
+from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView, FormView, UpdateView, DeleteView
 from .forms import PostForm
 from .filters import PostFilter
@@ -101,6 +102,12 @@ class CategoryView(ListView):
         print(f"This is cat id: {id}")
         context['categoryview'] = Post.objects.filter(category=id).order_by('-date')  # вписываем наш фильтр в контекст
         return context
+
+class SubscribeCategory(View):
+    pass
+
+
+
 
 
 @login_required
