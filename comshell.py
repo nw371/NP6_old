@@ -160,3 +160,4 @@ for i in c.values():
 
 # Subscriber.objects.get(id = 1).category.add(Category.objects.get(id=1))
 # Subscriber.objects.get(id=1).user.username
+

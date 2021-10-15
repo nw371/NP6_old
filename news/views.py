@@ -7,7 +7,7 @@ from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView, FormView, UpdateView, DeleteView
 from .forms import PostForm
 from .filters import PostFilter
-from .models import Post, Category, Subscriber
+from .models import Post, Category
 
 
 #class Template()
@@ -38,11 +38,11 @@ class PostDetail(DetailView):
     context_object_name = 'post'  # название объекта. в нём будет
 
 class AddPub(PermissionRequiredMixin,FormView):
-    permission_required = ('post.add_post',)
     model = Post
     template_name = 'news/add.html'
     context_object_name = 'add'
     form_class = PostForm
+    permission_required = ('post.add_post',)
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)  # создаём новую форму, забиваем в неё данные из POST-запроса

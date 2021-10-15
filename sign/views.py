@@ -14,7 +14,7 @@ def add_to_authors(request):
     user_obj = User.objects.get(username=user.username, first_name=user.first_name, last_name=user.last_name)
     author_group = Group.objects.get(name='authors')
     print(author_group)
-    if not request.user.groups.filter(name='authors').exists():
+    if not user.groups.filter(name='authors').exists():
         print('2')
         author_group.user_set.add(user)
         Author.objects.create(authorUsername=user_obj)
