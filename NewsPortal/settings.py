@@ -173,7 +173,7 @@ ACCOUNT_FORMS = {'signup': 'sign.forms.BasicSignupForm'}
 EMAIL_HOST = smtpserv  # адрес сервера Яндекс-почты для всех один и тот же
 EMAIL_PORT = smtport  # порт smtp сервера тоже одинаковый
 EMAIL_HOST_USER = admail  # ваше имя пользователя, например, если ваша почта user@yandex.ru, то сюда надо писать user, иными словами, это всё то что идёт до собаки
-EMAIL_HOST_PASSWORD = passw  # пароль от почты
+EMAIL_HOST_PASSWORD = passw  # пароль
 EMAIL_USE_SSL = True  # Яндекс использует ssl, подробнее о том, что это, почитайте в дополнительных источниках, но включать его здесь обязательно
 ADMINS = [
     (adminame, admail),
