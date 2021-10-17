@@ -133,6 +133,9 @@ class Subscriber(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Подписчик')
     category = models.ManyToManyField(Category, through='CategorySub')
 
+    def __str__(self):
+        return f'{self.user.first_name} {self.user.last_name}'
+
     class Meta:
         verbose_name = 'Подписчик'
         verbose_name_plural = 'Подписчики'

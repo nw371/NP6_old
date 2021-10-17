@@ -10,7 +10,12 @@
 {% block content %}
 
 <h1>Список публикаций</h1>
-<button> <a class="btn btn-primary" href="/news/subscribe/"> Подписаться на спам</a> </button>
+<button> <a class="btn btn-primary" href="/news/subscribe/"> Подписаться на спам </a> </button>
+<a class="btn btn-primary" href="/news/subscribed/"> Стать подписчиком </a>
+<!--<button> <a class="btn btn-primary" href="/news/subscribed/"> Стать подписчиком </a> </button>-->
+<!--{% if is_not_subscriber %}-->
+
+<!--{% endif %}-->
 <h1>Показано {{ categoryview|length }} публикаций.</h1>
     <table>
             <tr>

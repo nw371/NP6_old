@@ -1,16 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.mail import send_mail, EmailMultiAlternatives
-from django.http import request
+from django.http import request, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView, FormView, UpdateView, DeleteView
 from .forms import PostForm
 from .filters import PostFilter
-from .models import Post, Category
+from .models import Post, Category, Subscriber
 
 
 #class Template()
+
 
 class News(ListView):
     model = Post  # указываем модель, объекты которой мы будем выводить
@@ -75,7 +76,7 @@ class PostEdit(PermissionRequiredMixin, UpdateView):
 
 class PostDelete(LoginRequiredMixin, DeleteView):
 
-    template_name = 'news/delete.html'  # название шаблона будет product.html
+    template_name = 'news/delete.html'  # название шаблона
     queryset = Post.objects.all()
     success_url = 'news/'
 
@@ -103,23 +104,28 @@ class CategoryView(ListView):
         context['categoryview'] = Post.objects.filter(category=id).order_by('-date')  # вписываем наш фильтр в контекст
         return context
 
-class SubscribeCategory(View):
-    pass
 
+class SubscribeCategory(TemplateView):
+    # model = Subscriber
+    # context_object_name = 'subscribers'
+    template_name = 'news/subscribed.html'
+    #queryset = Subscriber.objects.all(id=)
 
 
 
 
 @login_required
 def send_email(request):
-    cat = request.META.get('HTTP_REFERER')[-1]
+    cat = request.META.get('HTTP_REFERER')[-1] #получаем id категории из request
     print("Cat: ", cat)
-    user = request.user.id
+    user = request.user.id #получаем id залогиненого юзера
     print(user)
-    if not Subscriber.objects.get(user_id = user):
-        Subscriber.objects.create(user_id = user)
-    Subscriber.objects.get(user_id = user).category.add(Category.objects.get(id=cat))
-    print(user)
+    sbs = Subscriber.objects.all().values("user_id") #вытаскиваем всех подписчиков из базы
+    if not user in sbs.values(): #проверяем есть-ли текущий юзер среди подписчиков
+        Subscriber.objects.create(user_id=user) #если нет - добавляем
+
+    Subscriber.objects.get(user_id = user).category.add(Category.objects.get(id=cat)) #подписываем юзера на текущую категорию
+
     # отправляем письмо
     msg = EmailMultiAlternatives(
         subject=f'Вы подписались на категроию {Category.objects.get(id=cat)}',
@@ -129,4 +135,5 @@ def send_email(request):
         to=['sergey@batalov.email'], # здесь список получателей. Например, секретарь, сам врач и т. д.
     )
     msg.send()
-    return redirect('/')
+
+    return HttpResponseRedirect("news/subsribed.html")
