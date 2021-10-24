@@ -2,12 +2,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.http import request, HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView, FormView, UpdateView, DeleteView
 from .forms import PostForm
 from .filters import PostFilter
-from .models import Post, Category, Subscriber
+from .models import Post, Category, Subscriber, CategorySub
 
 
 #class Template()
@@ -100,18 +100,16 @@ class CategoryView(ListView):
     def get_context_data(self, **kwargs):  # забираем отфильтрованные объекты переопределяя метод get_context_data у наследуемого класса (привет, полиморфизм, мы скучали!!!)
         context = super().get_context_data(**kwargs)
         id = self.kwargs.get('pk')
-        print(f"This is cat id: {id}")
         context['categoryview'] = Post.objects.filter(category=id).order_by('-date')  # вписываем наш фильтр в контекст
+        usr = self.request.user.id
+        sbsr = Subscriber.objects.get(user_id=usr).id
+        context['not_subscriber'] = not CategorySub.objects.filter(category_id=id, subscriber_id = sbsr).exists()
+
         return context
 
 
 class SubscribeCategory(TemplateView):
-    # model = Subscriber
-    # context_object_name = 'subscribers'
     template_name = 'news/subscribed.html'
-    #queryset = Subscriber.objects.all(id=)
-
-
 
 
 @login_required
@@ -119,21 +117,30 @@ def send_email(request):
     cat = request.META.get('HTTP_REFERER')[-1] #получаем id категории из request
     print("Cat: ", cat)
     user = request.user.id #получаем id залогиненого юзера
-    print(user)
-    sbs = Subscriber.objects.all().values("user_id") #вытаскиваем всех подписчиков из базы
-    if not user in sbs.values(): #проверяем есть-ли текущий юзер среди подписчиков
+    print("This is user: ",user)
+    sbs = list(Subscriber.objects.all().values("user_id")) #вытаскиваем всех подписчиков из базы
+    print("This is sbs: ",sbs)
+    #print("This is sbs values: ",sbs.values)
+    print("This is list: ",[d['user_id'] for d in sbs])
+    print("TEST STRING1")
+    if user not in [d['user_id'] for d in sbs]: #проверяем есть-ли текущий юзер среди подписчиков
+        print("TEST STRING2")
         Subscriber.objects.create(user_id=user) #если нет - добавляем
-
-    Subscriber.objects.get(user_id = user).category.add(Category.objects.get(id=cat)) #подписываем юзера на текущую категорию
-
-    # отправляем письмо
-    msg = EmailMultiAlternatives(
-        subject=f'Вы подписались на категроию {Category.objects.get(id=cat)}',
-        # имя клиента и дата записи будут в теме для удобства
-        body='Спасибо за подписку на нашем сайте',  # сообщение с кратким описанием проблемы
-        from_email=admail,  # здесь указываете почту, с которой будете отправлять (об этом попозже)
-        to=[admail], # здесь список получателей. Например, секретарь, сам врач и т. д.
-    )
-    msg.send()
-
-    return HttpResponseRedirect("news/subsribed.html")
+    casbs = list(CategorySub.objects.all().values("subscriber_id"))
+    sbid = Subscriber.objects.get(user_id = user).id
+    print("SsID: ", sbid)
+    if sbid not in [d['subscriber_id'] for d in casbs]:
+        print("TEST STRING3")
+        Subscriber.objects.get(user_id = user).category.add(Category.objects.get(id=cat)) #подписываем юзера на текущую категорию
+    #
+    # # отправляем письмо
+    # msg = EmailMultiAlternatives(
+    #     subject=f'Вы подписались на категроию {Category.objects.get(id=cat)}',
+    #     # имя клиента и дата записи будут в теме для удобства
+    #     body='Спасибо за подписку на нашем сайте',  # сообщение с кратким описанием проблемы
+    #     from_email=admail,  # здесь указываете почту, с которой будете отправлять (об этом попозже)
+    #     to=[admail], # здесь список получателей. Например, секретарь, сам врач и т. д.
+    # )
+    # msg.send()
+    return redirect("/news/subscribed/")
+    #return HttpResponseRedirect("/news/subsribed")

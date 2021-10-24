@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-from NewsPortal.NewsPortal.secda import passw, admail, smtpserv, adminame, smtport
+from .secda import passw, admail, smtpserv, adminame, smtport
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
